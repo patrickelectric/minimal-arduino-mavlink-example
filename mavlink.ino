@@ -20,31 +20,31 @@ void loop() {
 }
 
 void send_heartbeat() {
-   static uint32_t last_time = millis();
-   const uint32_t current_time = millis();
-   constexpr const uint32_t heartbeat_interval = 1000; // 1 second
-   if (current_time - last_time > heartbeat_interval) {
-      last_time = current_time; // Update for the next loop
-      
-      static mavlink_message_t mavlink_message;
-      static uint8_t mavlink_message_buffer[MAVLINK_MAX_PACKET_LEN];
-      static uint16_t mavlink_message_length = 0;
-      
-      if (mavlink_message_length == 0) { // Create message if not
-        const int system_id = 1;
-        const int component_id = 1;
-        const int mavlink_type = MAV_TYPE_GENERIC;
-        const int autopilot_type = MAV_AUTOPILOT_INVALID;
-        const int system_mode = MAV_MODE_PREFLIGHT;
-        const int custom_mode = 0x0000; // No flag
-        const int mavlink_state = MAV_STATE_ACTIVE;
-        mavlink_msg_heartbeat_pack(
-          system_id, component_id, &mavlink_message, mavlink_type, autopilot_type, system_mode, custom_mode, mavlink_state
-        );
-        mavlink_message_length = mavlink_msg_to_send_buffer(mavlink_message_buffer, &mavlink_message);
-      }
-      Serial.write(mavlink_message_buffer, mavlink_message_length);
-   }
+  static uint32_t last_time = millis();
+  const uint32_t current_time = millis();
+  constexpr const uint32_t heartbeat_interval = 1000; // 1 second
+  if (current_time - last_time > heartbeat_interval) {
+    last_time = current_time; // Update for the next loop
+
+    static mavlink_message_t mavlink_message;
+    static uint8_t mavlink_message_buffer[MAVLINK_MAX_PACKET_LEN];
+    static uint16_t mavlink_message_length = 0;
+
+    if (mavlink_message_length == 0) { // Create message if not
+      const int system_id = 1;
+      const int component_id = 1;
+      const int mavlink_type = MAV_TYPE_GENERIC;
+      const int autopilot_type = MAV_AUTOPILOT_INVALID;
+      const int system_mode = MAV_MODE_PREFLIGHT;
+      const int custom_mode = 0x0000; // No flag
+      const int mavlink_state = MAV_STATE_ACTIVE;
+      mavlink_msg_heartbeat_pack(
+        system_id, component_id, &mavlink_message, mavlink_type, autopilot_type, system_mode, custom_mode, mavlink_state
+      );
+      mavlink_message_length = mavlink_msg_to_send_buffer(mavlink_message_buffer, &mavlink_message);
+    }
+    Serial.write(mavlink_message_buffer, mavlink_message_length);
+  }
 }
 
 void decode_messages() {
@@ -57,7 +57,7 @@ void decode_messages() {
 
     // Try to get a new message
     if(mavlink_parse_char(MAVLINK_COMM_0, serial_byte, &message, &status)) {
-      
+
       // Handle message
       switch(message.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT:
@@ -66,7 +66,7 @@ void decode_messages() {
             break;
         // Add new messages here
         default:
-            break;        
+            break;
       }
     }
   }
